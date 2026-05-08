@@ -193,6 +193,29 @@ You'll want to review and clean up the output — particularly `themes` in `achi
 
 Commands are invoked from within Claude Code by typing `/command-name`. Each command reads your input files, generates the appropriate artifact, and writes output to your `PERSONAL_WORKDIR`.
 
+### Typical flow
+
+**1. You come across a role.**
+Paste the URL into Claude Code and run:
+```
+/add-opportunity https://jobs.lever.co/stripe/vp-product
+```
+JobCrawler fetches the posting, extracts the company, title, and key requirements, and adds it to your pipeline. If the URL is behind a login wall (LinkedIn, etc.), paste the job description text directly instead.
+
+**2. You want to find more roles proactively.**
+Run `/scan-roles` to search job boards and your target companies' career pages. JobCrawler scores each result against your profile and shows them ranked A–D. Pick the ones worth pursuing — they get added to your pipeline automatically.
+
+**3. You decide to pursue a role seriously.**
+Run `/generate-resume` with the opportunity slug. JobCrawler selects the achievements from your bank that best match the posting, tailors the language to the role, and generates a `.docx` resume saved to that opportunity's folder.
+
+**4. You identify a stakeholder to reach out to.**
+Add them to `contacts.csv`, then run `/draft-outreach` with the opportunity slug. JobCrawler generates three standalone messages — initial outreach, a follow-up at one week, and a graceful close at two weeks — calibrated to your relationship type with that contact.
+
+**5. Something moves.**
+A contact responds, you get a screening call, you move to interviews. Run `/update-opportunity` to log the stage change and add notes. Your pipeline index stays current.
+
+---
+
 ### `/add-opportunity`
 
 Adds a new job opportunity to your pipeline from a URL or pasted text.
