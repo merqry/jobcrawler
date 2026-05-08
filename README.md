@@ -20,6 +20,52 @@ The goal is to compress the search timeline and improve conversion by making the
 
 ## How It Works
 
+```mermaid
+flowchart TD
+    subgraph YOU["Your Inputs"]
+        profile["`**profile.json**
+        name · titles · comp targets`"]
+        workhistory["`**workhistory.csv**
+        employment history`"]
+        achievements["`**achievements.csv**
+        achievement bank`"]
+        contacts["`**contacts.csv**
+        contact list`"]
+        companies["`**companies.csv**
+        target companies`"]
+    end
+
+    subgraph PIPELINE["Pipeline"]
+        opportunity["`**Opportunity**
+        company · role · stage
+        contacts · threads`"]
+    end
+
+    subgraph OUTPUTS["Outputs"]
+        resume["`**resume.docx**
+        tailored to posting`"]
+        outreach["`**outreach.docx**
+        3-message sequence`"]
+    end
+
+    posting([Job Posting]) --> add-opportunity
+    companies --> scan-roles
+    profile --> scan-roles
+    scan-roles --> opportunity
+    add-opportunity --> opportunity
+
+    achievements --> generate-resume
+    workhistory --> generate-resume
+    profile --> generate-resume
+    opportunity --> generate-resume
+    generate-resume --> resume
+
+    contacts --> draft-outreach
+    profile --> draft-outreach
+    opportunity --> draft-outreach
+    draft-outreach --> outreach
+```
+
 JobCrawler is a set of Claude Code commands that operate on two locations:
 
 1. **This repo** (`jobcrawler/`) — the command definitions, scripts, and configuration templates
