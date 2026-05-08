@@ -216,6 +216,20 @@ A contact responds, you get a screening call, you move to interviews. Run `/upda
 
 ---
 
+### Opportunity slugs
+
+When you add an opportunity, JobCrawler generates a short identifier called a **slug** — a lowercase, underscore-separated string derived from the company name and role title. For example:
+
+- `stripe_vp_product`
+- `notion_head_of_product`
+- `anthropic_dir_strategy`
+
+The slug is used as the folder name under `$PERSONAL_WORKDIR/opportunities/` and is what you pass to commands like `/generate-resume` and `/draft-outreach`.
+
+**Where to find your slugs:** JobCrawler prints the slug when an opportunity is created. You can also run `/update-opportunity` without any arguments — it will read your `index.json` and show you a list of all current opportunities with their slugs and stages.
+
+---
+
 ### `/add-opportunity`
 
 Adds a new job opportunity to your pipeline from a URL or pasted text.
