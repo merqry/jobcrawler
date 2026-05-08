@@ -1,5 +1,6 @@
 logs/
 2026-02-20-235309-resman.txt
+.claude/settings.local.json
 __pycache__/
 *.pyc
 .DS_Store
