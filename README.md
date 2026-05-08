@@ -166,6 +166,29 @@ A typical setup looks like:
 
 ---
 
+## Getting Your Data In
+
+The input files are the foundation of everything JobCrawler generates. The most important — and most time-consuming — is `achievements.csv`. Here are two ways to populate it:
+
+### Starting from scratch
+
+Use the sample files in `sample/inputs/` as a template. Copy them to your work folder and replace the fictional data with your own, role by role.
+
+### Starting from existing resumes
+
+If you have past resumes, cover letters, LinkedIn exports, or performance reviews, you can instruct Claude to extract and structure your data automatically. Paste your documents into Claude Code and say something like:
+
+> "Here are my past resumes. Please extract my work history, achievements, and key themes and populate my input files in `$PERSONAL_WORKDIR/inputs/`."
+
+Claude will parse your existing materials and create or populate:
+- `workhistory.csv` — from your employment history
+- `achievements.csv` — from your bullet points, with themes inferred from the content
+- `profile.json` — from your contact info and stated objectives
+
+You'll want to review and clean up the output — particularly `themes` in `achievements.csv` and `confidence` ratings — but it gives you a solid starting point in minutes rather than hours.
+
+---
+
 ## Commands
 
 Commands are invoked from within Claude Code by typing `/command-name`. Each command reads your input files, generates the appropriate artifact, and writes output to your `PERSONAL_WORKDIR`.
