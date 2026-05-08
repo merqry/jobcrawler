@@ -105,7 +105,13 @@ A typical setup looks like:
 
 5. **Populate your inputs:**
 
-   JobCrawler reads from a set of CSV and JSON files in `$PERSONAL_WORKDIR/inputs/`. See [Input File Reference](#input-file-reference) below for the expected format of each file.
+   JobCrawler reads from a set of CSV and JSON files in `$PERSONAL_WORKDIR/inputs/`. The `sample/inputs/` folder in this repo contains fully worked example files you can use as a starting point — copy them to your work folder and replace the fictional data with your own:
+
+   ```bash
+   cp -r sample/inputs/* /path/to/your/job-search/inputs/
+   ```
+
+   See [Input File Reference](#input-file-reference) below for a full description of each file and its fields.
 
    At minimum, you need:
    - `profile.json` — your name, contact info, title targets, and compensation range
@@ -210,47 +216,127 @@ Updates the stage (`targeting` → `applied` → `screening` → `interviewing` 
 
 ## Input File Reference
 
-All input files live in `$PERSONAL_WORKDIR/inputs/`.
+All input files live in `$PERSONAL_WORKDIR/inputs/`. Fully worked examples for all files are in `sample/inputs/`.
+
+---
 
 ### `profile.json`
-Your core profile used across all commands.
+
+Your core profile, used by every command. Contains your contact information, the role titles you're targeting, your compensation range, and a pool of core strengths that the resume generator draws from.
+
 ```json
 {
-  "name": "Your Name",
-  "email": "you@example.com",
-  "phone": "+1 555 000 0000",
-  "linkedin_url": "https://linkedin.com/in/yourhandle",
-  "title_targets": ["VP Strategy and Operations", "Senior Director Strategy"],
+  "name": "Alex Rivera",
+  "email": "alex.rivera@example.com",
+  "phone": "+1 415 555 0192",
+  "linkedin_url": "https://linkedin.com/in/alexrivera",
+  "title_targets": [
+    "VP Product",
+    "Head of Product",
+    "Director of Product"
+  ],
   "compensation_targets": {
     "min": 250000,
     "target": 300000,
     "max": 400000,
     "currency": "USD"
   },
-  "core_strengths": ["Operating model design", "Revenue acceleration", "Cross-functional leadership"]
+  "core_strengths": [
+    "Product-led growth",
+    "0-to-1 product development",
+    "Cross-functional leadership"
+  ]
 }
 ```
 
+| Field | Description |
+|---|---|
+| `title_targets` | The role titles `/scan-roles` searches for and `/generate-resume` optimizes toward. Be specific — these drive search queries and scoring. |
+| `compensation_targets.min` | Hard floor used by `/scan-roles` to filter out roles where the stated max is below this threshold. Roles with no salary listed are kept. |
+| `core_strengths` | Used as a reference pool when generating the Core Strengths section of a resume. The command synthesizes from your achievements — these aren't copied verbatim. |
+
+---
+
 ### `workhistory.csv`
-One row per role. Columns: `job_id`, `company`, `title`, `location`, `start_date`, `end_date`, `scope`, `is_early_career`
+
+One row per role, most recent first. Provides the structure for the Professional Experience section of generated resumes.
+
+| Column | Description |
+|---|---|
+| `job_id` | Unique identifier (e.g., `J001`). Used to link achievements to roles. |
+| `company` | Company name as it should appear on the resume. |
+| `title` | Your title at that company. |
+| `location` | City and state (e.g., `San Francisco CA`). |
+| `start_date` | Format: `YYYY-MM` (e.g., `2021-03`). |
+| `end_date` | Format: `YYYY-MM`, or `present` for your current role. |
+| `scope` | One-line description of your remit — team size, P&L, product lines. Rendered in italics under your title. Optional but recommended. |
+| `is_early_career` | `true` or `false`. Early career roles are collapsed to 1–2 bullets in a condensed section at the bottom of the resume. |
+
+---
 
 ### `achievements.csv`
-The core of the system. One row per achievement. Columns: `id`, `job_id`, `Co`, `subheading`, `title`, `narrative`, `themes`, `confidence`
 
-- `themes` — semicolon-separated tags (e.g., `revenue growth;GTM strategy;team leadership`)
-- `confidence` — `high`, `medium`, or `low` (affects selection priority for resumes)
-- `narrative` — the full achievement bullet as it appears on the resume
+The core of the system. Every resume, and every outreach message, draws from this bank. Invest time here — the quality of your outputs is directly proportional to the quality of your achievements.
+
+One row per achievement. A single role typically has 6–15 achievements; you don't use all of them in any one resume — the command selects based on relevance to the specific posting.
+
+| Column | Description |
+|---|---|
+| `id` | Unique identifier (e.g., `A001`). |
+| `job_id` | Links to a role in `workhistory.csv`. |
+| `Co` | Company name (redundant with job_id but useful for quick scanning). |
+| `subheading` | Thematic grouping (e.g., `Revenue Growth`, `Organizational Leadership`). Used to structure resume sections. Max 3 subheadings per role on the generated resume. |
+| `title` | Short label for the achievement (e.g., `Drove ARR expansion from $80M to $120M`). Not shown on the resume — used for internal reference. |
+| `narrative` | The full achievement bullet as it will appear on the resume. Write in past tense, lead with impact, include metrics. This is copied (and optionally lightly rewritten) directly into the output. |
+| `themes` | Semicolon-separated tags (e.g., `revenue growth;GTM strategy;team leadership`). This is how the resume command matches achievements to a job posting's requirements — tag thoroughly. |
+| `confidence` | `high`, `medium`, or `low`. Reflects how strongly you can speak to this achievement in an interview. High-confidence achievements are preferred when multiple options match. |
+
+**Tips for `themes`:** Use consistent terminology. If you tag some achievements `revenue growth` and others `ARR growth`, they won't be treated as equivalent. Keep a short list of your standard themes and apply them consistently.
+
+**Tips for `narrative`:** Write the bullet exactly as you'd want it to appear. The command may lightly reword emphasis for a specific role, but the core evidence — numbers, scope, outcomes — should already be in the narrative.
+
+---
 
 ### `contacts.csv`
-One row per contact. Columns: `id`, `name`, `company`, `title`, `relationship`, `relationship_type`, `notes`
 
-- `relationship_type` — `cold`, `mutual`, `alumni`, or `prior_colleague` (affects outreach tone)
+One row per contact. Used by `/draft-outreach` to tailor message tone and `/scan-roles` to note warm paths into target companies.
+
+| Column | Description |
+|---|---|
+| `id` | Unique identifier (e.g., `C001`). |
+| `name` | Full name. |
+| `company` | Their current company. Should match a company name in `companies.csv` if they're at a target company. |
+| `title` | Their current title. |
+| `relationship` | Free-text description of how you know them (e.g., `Former colleague at Meridian Technologies`). Used for context in outreach generation. |
+| `relationship_type` | One of: `cold`, `mutual`, `alumni`, `prior_colleague`. Controls outreach tone — warm relationships get a different opening than cold ones. |
+| `notes` | Any additional context — last interaction, what they mentioned, whether an intro has been offered. |
+
+**`relationship_type` values:**
+- `cold` — No prior connection. Outreach opens with a value-first hook.
+- `mutual` — Connected through a shared contact. Reference the mutual connection.
+- `alumni` — Shared school or previous employer. Leverage the common ground.
+- `prior_colleague` — Worked together directly. Outreach is more personal and direct.
+
+---
 
 ### `companies.csv`
-Your target company list. Columns: `company`, `tier`, `priority_score`, `careers_url`, `comp_override`, `ats_platform`
+
+Your target company list. Used by `/scan-roles` to scope searches and prioritize results, and by `/draft-outreach` to provide company context.
+
+| Column | Description |
+|---|---|
+| `company` | Company name. Should be consistent with how you reference it in `contacts.csv`. |
+| `tier` | `1` (highest priority) through `3`. Tier 1 and 2 companies are included in default scans. |
+| `priority_score` | 1–10. Used alongside tier for finer-grained prioritization. Score 7+ companies are included in `tier1` scans even if their tier is 2. |
+| `careers_url` | Direct URL to their careers or jobs page. Used by `/scan-roles` for targeted searches. |
+| `comp_override` | Optional. Sets a per-company compensation floor that overrides the global `profile.json` minimum. Useful for high-cost-of-living companies or roles where you'd accept less. |
+| `ats_platform` | The applicant tracking system they use (e.g., `greenhouse`, `lever`, `ashby`). Helps `/scan-roles` find and fetch postings from public ATS job boards. |
+| `notes` | Free-text notes — context on why you're targeting them, known openings, recent news, etc. |
 
 ---
 
 ## License
+
+See LICENSE for details.
 
 See LICENSE for details.
