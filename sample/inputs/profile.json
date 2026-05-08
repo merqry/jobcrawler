@@ -1,0 +1,26 @@
+{
+  "name": "Alex Rivera",
+  "email": "alex.rivera@example.com",
+  "phone": "+1 415 555 0192",
+  "linkedin_url": "https://linkedin.com/in/alexrivera",
+  "title_targets": [
+    "VP Product",
+    "Senior Director Product Management",
+    "Head of Product",
+    "Director of Product",
+    "Chief Product Officer"
+  ],
+  "compensation_targets": {
+    "min": 250000,
+    "target": 300000,
+    "max": 400000,
+    "currency": "USD"
+  },
+  "core_strengths": [
+    "Operating model design",
+    "Revenue acceleration",
+    "Cross-functional leadership",
+    "GTM strategy and execution",
+    "Organizational scaling"
+  ]
+}

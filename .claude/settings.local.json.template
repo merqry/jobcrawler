@@ -1,0 +1,14 @@
+{
+  "env": {
+    "PERSONAL_WORKDIR": "/path/to/your/workdir",
+    "JOBCRAWLER_DIR": "/path/to/jobcrawler"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "WebSearch",
+      "WebFetch(domain:jobs.lever.co)",
+      "WebFetch(domain:boards.greenhouse.io)"
+    ]
+  }
+}
